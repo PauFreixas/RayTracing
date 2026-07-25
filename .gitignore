@@ -1,0 +1,44 @@
+# ==========================================
+# C++ Build Outputs & Binaries
+# ==========================================
+# Exclude compiled binaries and intermediate build files
+bin/
+*.exe
+
+# MSVC Compiler intermediate files & symbols
+*.obj
+*.o
+*.ilk
+*.pdb
+*.idb
+*.exp
+
+# ==========================================
+# Legacy Visual Studio Clutter
+# ==========================================
+# In case old VS files or hidden directories remain
+.vs/
+Debug/
+Release/
+x64/
+x86/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+*.vcxproj.user
+*.tlog
+*.suo
+
+# ==========================================
+# Generated Rendered Output Files
+# ==========================================
+# If your raytracer outputs rendered images (e.g., .ppm, .bmp, .png)
+# Uncomment the line below if you don't want rendered images tracked by Git:
+# *.ppm
+
+# ==========================================
+# Operating System Files
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
