@@ -1,6 +1,0 @@
-﻿  Raytracer.cpp
-  AppMain.cpp
-  Generando código...
-AppMain.obj : warning LNK4075: se omite '/EDITANDCONTINUE' debido a la especificación '/SAFESEH'
-  RayTracer GFX II.vcxproj -> E:\Whitted_Ray_Tracer_Code\Debug\RayTracer GFX II.exe
-  RayTracer GFX II.vcxproj -> E:\Whitted_Ray_Tracer_Code\Debug\RayTracer GFX II.pdb (Full PDB)
