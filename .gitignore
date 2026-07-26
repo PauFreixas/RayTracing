@@ -1,11 +1,24 @@
 # ==========================================
+# CMake Build Directory & Dependencies
+# ==========================================
+# Ignores the CMake build folder (out-of-source builds)
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# ==========================================
 # C++ Build Outputs & Binaries
 # ==========================================
 # Exclude compiled binaries and intermediate build files
 bin/
 *.exe
+*.dll
+*.so
+*.dylib
 
-# MSVC Compiler intermediate files & symbols
+# MSVC & MinGW intermediate files
 *.obj
 *.o
 *.ilk
@@ -14,9 +27,9 @@ bin/
 *.exp
 
 # ==========================================
-# Legacy Visual Studio Clutter
+# IDE & Tooling Configs
 # ==========================================
-# In case old VS files or hidden directories remain
+# Visual Studio
 .vs/
 Debug/
 Release/
@@ -29,12 +42,20 @@ x86/
 *.tlog
 *.suo
 
+# VS Code
+.vscode/
+
+# CLion
+.idea/
+cmake-build-debug/
+cmake-build-release/
+
 # ==========================================
 # Generated Rendered Output Files
 # ==========================================
 # If your raytracer outputs rendered images (e.g., .ppm, .bmp, .png)
-# Uncomment the line below if you don't want rendered images tracked by Git:
-# *.ppm
+*.ppm
+*.bmp
 
 # ==========================================
 # Operating System Files
