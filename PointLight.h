@@ -9,6 +9,9 @@ class PointLight // Defines a single point light source.
 	public:
 		Vec3  m_Position;
 		Color m_Color;
+
+		Color getColor();
+		Vec3 getPosition();
 };
 
 #endif

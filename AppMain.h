@@ -5,7 +5,11 @@
 #include "World.h"
 #include "Raytracer.h"
 
-#include <GL/glut.h>
+#if defined(__APPLE__)
+    #include <GLUT/glut.h>
+#else
+    #include <GL/glut.h>
+#endif
 
 #define RESOLUTIONX 400
 #define RESOLUTIONY 400

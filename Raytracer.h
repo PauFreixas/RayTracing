@@ -80,14 +80,14 @@ class Raytracer
 					const Ray   &ray,       // The ray to cast into the scene.
 					const Scene &scene,     // Global scene description, including lights.
 					HitInfo     &hitinfo,    // All information about ray-object intersection.
-					Object		*ignore	 = false  // Object that will be ignored for the intersection
+					Object		*ignore	 = nullptr  // Object that will be ignored for the intersection
 		);
 
 		int Cast2(							// Casts a single ray to see what it hits.
 					const Ray   &ray,       // The ray to cast into the scene.
 					const Scene &scene,     // Global scene description, including lights.
 					HitInfo     &hitinfo,    // All information about ray-object intersection.
-					Object		*ignore	 = false  // Object that will be ignored for the intersection
+					Object		*ignore	 = nullptr  // Object that will be ignored for the intersection
 		);
 
 		Sample SampleProjectedHemisphere(

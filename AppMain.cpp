@@ -28,7 +28,7 @@ void Idle( void )
 	}
 }
 
-void main(int argc, char** argv)
+int main(int argc, char** argv)
 {
 	glutInit(&argc, argv);
 	glutInitDisplayMode( GLUT_SINGLE | GLUT_RGBA);
@@ -45,4 +45,5 @@ void main(int argc, char** argv)
 		glutDisplayFunc( Draw );	
 		glutMainLoop();
 	}
+	return 1;
 }
