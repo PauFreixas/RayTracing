@@ -54,6 +54,7 @@ cmake-build-release/
 # Generated Rendered Output Files
 # ==========================================
 # If your raytracer outputs rendered images (e.g., .ppm, .bmp, .png)
+results/
 *.ppm
 *.bmp
 
