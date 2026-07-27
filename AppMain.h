@@ -11,8 +11,9 @@
     #include <GL/glut.h>
 #endif
 
-#define RESOLUTIONX 400
-#define RESOLUTIONY 400
+#define RESOLUTIONX 1000
+#define RESOLUTIONY 1000
+#define ESCAPE_KEY 27
 
 Raytracer g_raytracer( RESOLUTIONX , RESOLUTIONY );
 World w;

@@ -1,12 +1,14 @@
 #include "windows.h"
 #include "AppMain.h"
 
+//Escape condition
 void Keyboard(unsigned char tecla, int x, int y)
 {
-	if (tecla == 27) 
+	if (tecla == ESCAPE_KEY) 
 		exit(0);
 }
 
+//
 void Draw( void )
 {
 	g_raytracer.draw();
@@ -38,12 +40,14 @@ int main(int argc, char** argv)
 
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 
-	if ( w.readScene("escena.sdf") )
+	if ( w.readScene("scene.sdf") )
 	{
 		glutKeyboardFunc( Keyboard );
 		glutIdleFunc( Idle );
 		glutDisplayFunc( Draw );	
 		glutMainLoop();
+	} else {
+		std::cout<<"No Scene Found"<<std::endl;
 	}
 	return 1;
 }
