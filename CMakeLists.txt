@@ -7,8 +7,11 @@ project(Raytracer CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 
-file(GLOB SOURCES "*.cpp")
+file(GLOB SOURCES "src/*.cpp")
 add_executable(Raytracer ${SOURCES})
+
+# Tell CMake to look for header files inside src/
+target_include_directories(Raytracer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 find_package(OpenGL REQUIRED)
 
