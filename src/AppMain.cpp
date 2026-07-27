@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 
-	if ( w.readScene("scene.sdf") )
+	if ( w.readScene("../assets/scene.sdf") )
 	{
 		glutKeyboardFunc( Keyboard );
 		glutIdleFunc( Idle );

@@ -1,4 +1,10 @@
 #include <math.h>
+//These are all to save result with a timestamp
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+#include <string>
 /***************************************************************************
 *                                                                          *
 * This is the source file for a ray tracer. It defines most of the		   *
@@ -46,13 +52,24 @@ void Raytracer::cast_line( World world )
 		(*I)( resolutionY-currentLine-1, i ) = ToneMap( Trace( ray, world.getScene(), tree_depth ) );
     }
 
-	if (++currentLine == resolutionY)
-	{
-		// Image computation done, save it to file
-		cout << "done." << endl;
-	    I->Write( "Resultat.ppm" );
-		isDone = true;
-	}
+	if (++currentLine == resolutionY) {
+        // Image computation done, save it to file
+        cout << "done." << endl;
+
+        // Get current time
+        auto now = std::chrono::system_clock::now();
+        std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+        std::tm localTime = *std::localtime(&currentTime);
+
+        // Format filename: ResultYYYY_MM_DD_HH_MM.ppm
+        std::ostringstream filename;
+        filename << "../results/Result" 
+                << std::put_time(&localTime, "%Y_%m_%d_%H_%M") 
+                << ".ppm";
+
+        I->Write(filename.str().c_str()); // Pass filename.str() directly if Write() accepts std::string
+        isDone = true;
+    }
 }
 
 
