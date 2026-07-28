@@ -1,7 +1,7 @@
 # RayTracing
 
 A small OpenGL/GLUT-based ray tracing project written in C++. Displays a Cornell Box by default.
-
+![Sample Ray Tracing image](Demo.png)
 ## Overview
 
 This repository builds a simple ray tracer that reads a scene description from `scene.sdf`, renders the scene line-by-line, and displays the result in an OpenGL window.
@@ -11,7 +11,7 @@ This repository builds a simple ray tracer that reads a scene description from `
 - C++17 ray tracing implementation
 - Uses OpenGL and GLUT/FreeGLUT for rendering
 - Supports scene input from `scene.sdf`
-- Writes output to `Resultat.ppm`
+- Writes pixel data output to `Resultat.ppm`
 
 ## Requirements
 
