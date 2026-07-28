@@ -45,6 +45,7 @@ int main(int argc, char** argv)
 	//Read Cornell Box from scene.sdf. If no scene is found output error.
 	if ( w.readScene("../assets/scene.sdf") )
 	{
+		//Set up keyboard, idle and draw functions and run main GLUT loop
 		glutKeyboardFunc( Keyboard );
 		glutIdleFunc( Idle );
 		glutDisplayFunc( Draw );	
