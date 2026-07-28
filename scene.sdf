@@ -1,6 +1,6 @@
 # Cornell Box
 
-# Sistema de cordenades:
+# Coordinate system:
 
 # (X, Y, Z)
 #
@@ -17,7 +17,6 @@
 
 
 # View from the front.
-
 eye              (0, 0, 40)
 lookat           (0.0, 0.0, 0.0)
 up               (0.0, 1.0, 0.0)
@@ -56,7 +55,7 @@ sphere           (-7.5, 1, 10.0) 2.0
 diffuse          [0.94, 0.21, 0.21]
 specular         [0.62, 0.85, 1.00]
 reflectivity     0.3
-opacity          1.0
+opacity          0.0
 Phong_exp        15
 
 ## Green sphere
@@ -92,12 +91,12 @@ Phong_exp        15
 
 ## Blue sphere 2
 
-sphere           (-1.0, -8.0, -3.0) 2.0
-diffuse          [0.21, 0.65, 0.94]
-specular         [0.62, 0.85, 1.00]
-reflectivity     0.0
-opacity          1.0
-Phong_exp        15
+##sphere           (-1.0, -8.0, -3.0) 2.0
+##diffuse          [0.21, 0.65, 0.94]
+##specular         [0.62, 0.85, 1.00]
+##reflectivity     0.0
+##opacity          1.0
+##Phong_exp        15
 
 
 ## Red Mirror triangle

@@ -62,3 +62,5 @@ cmake-build-release/
 .DS_Store
 Thumbs.db
 desktop.ini
+ideas.md
+.gitignore

@@ -1,19 +1,21 @@
 #include "windows.h"
 #include "AppMain.h"
 
-//Escape condition
+// GLUT keyboard callback: handle key presses, e.g. ESC to quit the application.
 void Keyboard(unsigned char tecla, int x, int y)
 {
 	if (tecla == ESCAPE_KEY) 
 		exit(0);
 }
 
-//
+// GLUT display callback: draw with RayTracer when GLUT requests a redraw.
 void Draw( void )
 {
 	g_raytracer.draw();
 }
 
+// GLUT idle callback: called when event queue is empty.
+// Used here to advance the ray tracer one scanline at a time and request redisplay.
 void Idle( void )
 {
 	if (!g_raytracer.IsDone())
@@ -32,15 +34,16 @@ void Idle( void )
 
 int main(int argc, char** argv)
 {
+	//Initialize glut window
 	glutInit(&argc, argv);
 	glutInitDisplayMode( GLUT_SINGLE | GLUT_RGBA);
 	glutInitWindowPosition(200,100);
 	glutInitWindowSize( RESOLUTIONX , RESOLUTIONY );
 	glutCreateWindow("Raytracer");
-
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 
-	if ( w.readScene("scene.sdf") )
+	//Read Cornell Box from scene.sdf. If no scene is found output error.
+	if ( w.readScene("../assets/scene.sdf") )
 	{
 		glutKeyboardFunc( Keyboard );
 		glutIdleFunc( Idle );
@@ -49,5 +52,6 @@ int main(int argc, char** argv)
 	} else {
 		std::cout<<"No Scene Found"<<std::endl;
 	}
-	return 1;
+
+	return 0;
 }
