@@ -55,24 +55,24 @@ At most **10** lights are supported, and this limit is not checked.
 | `sphere`   | `sphere (cx,cy,cz) radius` | |
 | `cube`     | `cube (x1,y1,z1) (x2,y2,z2)` | Axis-aligned box given by two opposite corners. |
 | `triangle` | `triangle (ax,ay,az) (bx,by,bz) (cx,cy,cz)` | |
-| `polygon`  | `polygon (a) (b) (c) (d) (e)` | Five vertices, each `(x,y,z)`. Parsed, but its intersection is not implemented yet, so it is invisible. |
+| `polygon`  | `polygon (a) (b) (c) (d) (e)` | Five vertices, each `(x,y,z)`, in order around the edge. They must lie in one plane and form a convex shape. |
 
 ## Materials
 
 Material lines apply to the **most recently declared object**, so they must follow an object line.
 A material line before any object crashes the reader.
 
-| Keyword            | Value     | Meaning | Used by the renderer today? |
-|--------------------|-----------|---------|-----------------------------|
-| `diffuse`          | `[r,g,b]` | Diffuse (Lambertian) colour. | Yes |
-| `specular`         | `[r,g,b]` | Colour of specular highlights. | Not yet (M1) |
-| `Phong_exp`        | number    | Phong exponent. Higher values give tighter highlights. | Not yet (M1) |
-| `reflectivity`     | number in `[0,1]` | Weight of mirror reflection. | Not yet (M1) |
-| `refractive_index` | number    | Index of refraction (speed of light in a vacuum / in the material). | Not yet (M1) |
-| `opacity`          | number in `[0,1]` | 0 = fully transparent, 1 = opaque. | Not yet (M1) |
-| `emission`         | `[r,g,b]` | Emitted light. Any non-zero value makes the object an emitter. | Only to skip emitters in `Trace` |
+| Keyword            | Value     | Meaning | Default |
+|--------------------|-----------|---------|---------|
+| `diffuse`          | `[r,g,b]` | Diffuse (Lambertian) colour. | `[0,0,0]` |
+| `specular`         | `[r,g,b]` | Colour of Phong highlights. | `[0,0,0]` |
+| `Phong_exp`        | number    | Phong exponent. Higher values give smaller, sharper highlights. `0` turns highlights off. | `0` |
+| `reflectivity`     | number in `[0,1]` | Share of an opaque surface's light that is mirror reflection. The rest is diffuse. | `0` |
+| `refractive_index` | number    | Index of refraction (speed of light in a vacuum / in the material), for example 1.5 for glass. | `1` |
+| `opacity`          | number in `[0,1]` | 1 = opaque, 0 = fully transparent (glass). | `1` |
+| `emission`         | `[r,g,b]` | Light the surface gives off, added to its colour. | `[0,0,0]` |
 
-Set every material field you rely on: fields you leave out are not guaranteed to start at zero.
+How these values are combined is explained in [shading.md](shading.md).
 
 ## Minimal example
 

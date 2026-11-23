@@ -14,7 +14,11 @@
 			float m_Reflectivity; // Weight given to mirror reflection, between 0 and 1.
 			float m_RefractiveIndex;	// (vel. llum en el buit) / (vel. llum en aquest material)
 			float m_Opacity;			// [0-1] 0:transparent, 1:opac
-			bool  Emitter() const { return ( m_Emission.red != 0 || m_Emission.blue != 0 || m_Emission.green != 0 ); } 
+			// Defaults for fields a scene file leaves out: black, matte, opaque, no reflection.
+			Material()
+				: m_Type( 0 ), m_Phong_exp( 0.0f ), m_Reflectivity( 0.0f ),
+				  m_RefractiveIndex( 1.0f ), m_Opacity( 1.0f ) {}
+			bool  Emitter() const { return ( m_Emission.red != 0 || m_Emission.blue != 0 || m_Emission.green != 0 ); }
 	};
 
 #endif
