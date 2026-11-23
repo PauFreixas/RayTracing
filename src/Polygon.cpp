@@ -79,7 +79,36 @@ Box3 Polygon::GetBounds() const // Return pre-computed box.
     return box;
     }
 
+// Ray-polygon intersection for a flat, convex polygon with corners A to E.
+// 1. Intersect the ray with the polygon's plane  N . X + d = 0.
+// 2. The hit point is inside when it lies on the same side of every edge,
+//    i.e. (edge x (point - edge start)) . N has the same sign for all edges.
 bool Polygon::Intersect( const Ray &ray, HitGeom &hitgeom ) const
     {
-	return false;
+	const double Parallel = 1.0E-9;		// Below this, the ray is treated as parallel.
+
+	const double denom = N * ray.direction;
+	if( fabs( denom ) < Parallel ) return false;		// Ray parallel to the plane.
+
+	const double s = -( N * ray.origin + d ) / denom;	// Distance along the ray.
+	if( s <= 0.0 || s > hitgeom.distance ) return false;
+
+	const Vec3 P = ray.origin + s * ray.direction;
+	const Vec3 corners[5] = { A, B, C, D, E };
+	bool positive = false, negative = false;
+	for( int i = 0; i < 5; i++ )
+	{
+		const Vec3 &from = corners[i];
+		const Vec3 &to   = corners[( i + 1 ) % 5];
+		const double side = ( ( to - from ) ^ ( P - from ) ) * N;
+		if( side > 0.0 ) positive = true;
+		if( side < 0.0 ) negative = true;
+		if( positive && negative ) return false;		// Outside this edge.
+	}
+
+	hitgeom.distance = s;
+	hitgeom.point    = P;
+	hitgeom.normal   = N;
+	hitgeom.origin   = ray.origin;
+	return true;
 	}

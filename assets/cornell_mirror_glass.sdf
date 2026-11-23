@@ -1,0 +1,72 @@
+# Cornell box with a mirror sphere and a glass sphere (M1: Whitted ray tracing)
+#
+# Shows: every light added up, Phong highlights, hard shadows (coloured,
+# because the two lights have different colours), mirror reflection,
+# and refraction with Fresnel reflection on the glass.
+#
+# Coordinate system: X right, Y up, Z towards the camera.
+
+# Camera
+eye     (0, 0, 40)
+lookat  (0, 0, 0)
+up      (0, 1, 0)
+vpdist  3.1
+
+# Lights: warm on the left, cool on the right
+lightpos   (-4.0, 9.0, 4.0)
+lightcolor [0.75, 0.6, 0.45]
+lightpos   (4.0, 9.0, 4.0)
+lightcolor [0.4, 0.5, 0.75]
+amblight   [0.12, 0.12, 0.12]
+bgcolor    [0.0, 0.0, 0.0]
+
+## Mirror sphere (back left)
+sphere       (-4.0, -6.5, -3.5) 3.5
+diffuse      [0.05, 0.05, 0.05]
+specular     [1.0, 1.0, 1.0]
+Phong_exp    200
+reflectivity 0.9
+opacity      1.0
+
+## Glass sphere (front right)
+sphere           (4.0, -6.5, 3.0) 3.5
+diffuse          [0.0, 0.0, 0.0]
+specular         [1.0, 1.0, 1.0]
+Phong_exp        200
+reflectivity     0.0
+refractive_index 1.5
+opacity          0.0
+
+## Matte block (back right), to cast a clear shadow
+cube         (3.0, -10.0, -8.0) (7.0, -2.0, -4.0)
+diffuse      [0.85, 0.85, 0.85]
+specular     [0.0, 0.0, 0.0]
+Phong_exp    0
+reflectivity 0.0
+opacity      1.0
+
+## Floor
+cube         (-10, -10.1, -10) (10, -10, 10)
+diffuse      [0.8, 0.8, 0.8]
+reflectivity 0.0
+opacity      1.0
+
+## Ceiling
+cube         (-10, 10, -10) (10, 10.1, 10)
+diffuse      [0.8, 0.8, 0.8]
+opacity      1.0
+
+## Back wall
+cube         (-10.1, -10.1, -10.1) (10.1, 10.1, -10)
+diffuse      [0.8, 0.8, 0.8]
+opacity      1.0
+
+## Left wall (red)
+cube         (-10.1, -10.1, -10) (-10, 10.1, 10)
+diffuse      [0.75, 0.15, 0.15]
+opacity      1.0
+
+## Right wall (green)
+cube         (10, -10.1, -10) (10.1, 10.1, 10)
+diffuse      [0.15, 0.65, 0.2]
+opacity      1.0

@@ -33,9 +33,9 @@ Triangle::Triangle( const Vec3 &A_, const Vec3 &B_, const Vec3 &C_ )
 	// Computes the bounding box;
 
 	// Initiallizes the box coordinates
-    box.X.min = box.X.min  = A.x;
-    box.Y.min = box.Y.min  = A.y;
-    box.Z.min = box.Z.min  = A.z;
+    box.X.min = box.X.max  = A.x;
+    box.Y.min = box.Y.max  = A.y;
+    box.Z.min = box.Z.max  = A.z;
 	// Check B coordinates
 	if( B.x < box.X.min ) box.X.min = B.x;
 	else if( B.x > box.X.max ) box.X.max = B.x;
@@ -93,9 +93,39 @@ Box3 Triangle::GetBounds() const // Return pre-computed box.
     return box;
     }
 
+// Moller-Trumbore ray-triangle intersection.
+// Solves  origin + s * direction = A + u * (B - A) + v * (C - A)  for s, u and v
+// using Cramer's rule.  The point is inside the triangle when u >= 0, v >= 0
+// and u + v <= 1.
+// Source: T. Moller and B. Trumbore, "Fast, Minimum Storage Ray/Triangle
+// Intersection", Journal of Graphics Tools, 1997.
 bool Triangle::Intersect( const Ray &ray, HitGeom &hitgeom ) const
     {
-	return false;
+	const double Parallel = 1.0E-9;		// Below this, the ray is treated as parallel.
+
+	const Vec3 edge1 = B - A;
+	const Vec3 edge2 = C - A;
+	const Vec3 p     = ray.direction ^ edge2;
+	const double det = edge1 * p;
+	if( fabs( det ) < Parallel ) return false;	// Ray parallel to the triangle's plane.
+
+	const double invDet = 1.0 / det;
+	const Vec3   t      = ray.origin - A;
+	const double u      = ( t * p ) * invDet;
+	if( u < 0.0 || u > 1.0 ) return false;
+
+	const Vec3   q = t ^ edge1;
+	const double v = ( ray.direction * q ) * invDet;
+	if( v < 0.0 || u + v > 1.0 ) return false;
+
+	const double s = ( edge2 * q ) * invDet;		// Distance along the ray.
+	if( s <= 0.0 || s > hitgeom.distance ) return false;
+
+	hitgeom.distance = s;
+	hitgeom.point    = ray.origin + s * ray.direction;
+	hitgeom.normal   = N;
+	hitgeom.origin   = ray.origin;
+	return true;
 	}
 
 Sample Triangle::GetSample( const Vec3 &P, const Vec3 &N_point ) const

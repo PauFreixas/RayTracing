@@ -1,17 +1,29 @@
 # RayTracing
 
-A small OpenGL/GLUT-based ray tracing project written in C++. Displays a Cornell Box by default.
-![Sample Ray Tracing image](Demo.png)
+A small CPU ray tracer written from first principles in C++17, with an OpenGL/GLUT live preview.
+
+![Showcase render: glass ball, mirror sphere, coloured pillars and shiny spheres in a Cornell box](docs/images/showcase.png)
+
+*`assets/showcase.sdf`: the glass ball flips and squeezes the pillars behind it, the mirror sphere reflects the room (glass ball included), the small spheres range from broad to sharp highlights, and three coloured lights give coloured shadows.*
+
 ## Overview
 
 This repository builds a simple ray tracer that reads a scene description from an `.sdf` file, renders the scene line by line, and displays the result in an OpenGL window. The finished image is also saved as a `.ppm` file.
 
 ## Features
 
-- C++17 ray tracing implementation
+- Classic (Whitted) ray tracing: Lambert diffuse and Phong highlights from every light, hard shadows, mirror reflection, and refraction with total internal reflection and Fresnel (Schlick) reflection. See [docs/shading.md](docs/shading.md)
+- Spheres, boxes, triangles and convex polygons
 - Uses OpenGL and GLUT/FreeGLUT for rendering
 - Reads scenes from a simple text format (see [docs/scene-format.md](docs/scene-format.md))
 - Saves each finished render to `results/Result<date>_<time>.ppm`
+
+## Gallery
+
+| Scene | Render |
+|---|---|
+| `assets/cornell_mirror_glass.sdf`: a mirror sphere and a glass sphere lit by a warm and a cool light. Notice the warm and cool tints in the shadows and the Fresnel reflection of the green wall at the glass sphere's edge. | <img src="docs/images/cornell_mirror_glass.png" width="350" alt="Cornell box with a mirror sphere and a glass sphere"> |
+| `assets/scene.sdf` (the default scene, rendered when no file is given): the original coursework Cornell box with three red, green and blue lights. A mirror triangle on the floor, a reflective floor, and a mostly transparent sphere at the front left. | <img src="docs/images/cornell_default.png" width="350" alt="Default Cornell box scene with coloured lights and a mirror triangle"> |
 
 ## Requirements
 

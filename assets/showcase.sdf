@@ -1,0 +1,96 @@
+# Showcase: every feature of the Whitted ray tracer in one Cornell box
+#
+#   - Glass ball (front centre) in front of coloured pillars: refraction
+#     flips and squeezes the pillars, Fresnel reflection shows at its rim.
+#   - Mirror sphere (back left): reflection, including the glass ball and
+#     the room refracted inside it (rays bounce up to 5 times).
+#   - Three small spheres (right): Phong highlights from broad to sharp.
+#   - Mirror triangle against the right wall: triangle intersection, and
+#     reflections of reflections with the mirror sphere.
+#   - Three lights of different colours: coloured hard shadows.
+#   - Slightly reflective floor.
+#
+# Coordinate system: X right, Y up, Z towards the camera.
+
+# Camera
+eye     (0, 0, 40)
+lookat  (0, 0, 0)
+up      (0, 1, 0)
+vpdist  3.1
+
+# Lights: warm (left), neutral (centre), cool (right), in front of the objects
+lightpos   (-6.0, 9.0, 7.0)
+lightcolor [0.45, 0.32, 0.2]
+lightpos   (0.0, 9.0, 8.0)
+lightcolor [0.3, 0.3, 0.3]
+lightpos   (6.0, 9.0, 7.0)
+lightcolor [0.2, 0.3, 0.45]
+amblight   [0.1, 0.1, 0.1]
+bgcolor    [0.0, 0.0, 0.0]
+
+## Glass ball (front centre)
+sphere           (0.0, -6.5, 3.0) 3.5
+diffuse          [0.0, 0.0, 0.0]
+specular         [1.0, 1.0, 1.0]
+Phong_exp        300
+refractive_index 1.7
+opacity          0.0
+
+## Mirror sphere (back left)
+sphere       (-6.8, -7.2, -3.5) 2.8
+diffuse      [0.05, 0.05, 0.05]
+specular     [1.0, 1.0, 1.0]
+Phong_exp    300
+reflectivity 0.9
+
+## Small spheres (right): highlights from broad (5) to sharp (500)
+sphere       (5.0, -8.8, 6.5) 1.2
+diffuse      [0.95, 0.55, 0.15]
+specular     [0.6, 0.6, 0.6]
+Phong_exp    5
+
+sphere       (7.2, -8.8, 3.5) 1.2
+diffuse      [0.85, 0.2, 0.6]
+specular     [0.8, 0.8, 0.8]
+Phong_exp    50
+
+sphere       (6.5, -8.8, 0.0) 1.2
+diffuse      [0.2, 0.75, 0.85]
+specular     [1.0, 1.0, 1.0]
+Phong_exp    500
+
+## Coloured pillars against the back wall
+cube         (-5.5, -10.0, -9.5) (-3.0, 3.0, -7.5)
+diffuse      [0.85, 0.15, 0.1]
+
+cube         (-1.25, -10.0, -9.5) (1.25, 3.0, -7.5)
+diffuse      [0.95, 0.8, 0.1]
+
+cube         (3.0, -10.0, -9.5) (5.5, 3.0, -7.5)
+diffuse      [0.15, 0.35, 0.9]
+
+## Mirror triangle against the right wall, turned towards the room
+triangle     (7.8, -10.0, -6.5) (9.8, -10.0, -1.0) (9.3, 0.5, -4.5)
+diffuse      [0.05, 0.05, 0.05]
+reflectivity 0.9
+
+## Floor (slightly reflective)
+cube         (-10, -10.1, -10) (10, -10, 10)
+diffuse      [0.75, 0.75, 0.75]
+reflectivity 0.15
+
+## Ceiling
+cube         (-10, 10, -10) (10, 10.1, 10)
+diffuse      [0.75, 0.75, 0.75]
+
+## Back wall
+cube         (-10.1, -10.1, -10.1) (10.1, 10.1, -10)
+diffuse      [0.75, 0.75, 0.75]
+
+## Left wall (red)
+cube         (-10.1, -10.1, -10) (-10, 10.1, 10)
+diffuse      [0.7, 0.15, 0.15]
+
+## Right wall (green)
+cube         (10, -10.1, -10) (10.1, 10.1, 10)
+diffuse      [0.15, 0.6, 0.2]
