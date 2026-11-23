@@ -13,6 +13,10 @@ add_executable(Raytracer ${SOURCES})
 # Tell CMake to look for header files inside src/
 target_include_directories(Raytracer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+# Default scene used when no scene file is passed on the command line
+target_compile_definitions(Raytracer PRIVATE
+    RAYTRACER_DEFAULT_SCENE="${CMAKE_CURRENT_SOURCE_DIR}/assets/scene.sdf")
+
 find_package(OpenGL REQUIRED)
 
 if(APPLE)
@@ -40,6 +44,12 @@ else()
         # Make sure g++ can locate <GL/glut.h> inside the downloaded freeglut sources
         target_include_directories(Raytracer PRIVATE ${freeglut_SOURCE_DIR}/include)
         target_link_libraries(Raytracer PRIVATE freeglut OpenGL::GL OpenGL::GLU)
+        # Copy the fetched FreeGLUT DLL next to the executable so it runs on Windows
+        if(WIN32)
+            add_custom_command(TARGET Raytracer POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                        $<TARGET_FILE:freeglut> $<TARGET_FILE_DIR:Raytracer>)
+        endif()
     else()
         target_link_libraries(Raytracer PRIVATE GLUT::GLUT OpenGL::GL OpenGL::GLU)
     endif()

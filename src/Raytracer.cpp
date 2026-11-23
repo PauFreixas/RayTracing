@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <sstream>
 #include <string>
+#include <filesystem>
 /***************************************************************************
 *                                                                          *
 * This is the source file for a ray tracer. It defines most of the		   *
@@ -61,13 +62,17 @@ void Raytracer::cast_line( World world )
         std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
         std::tm localTime = *std::localtime(&currentTime);
 
-        // Format filename: ResultYYYY_MM_DD_HH_MM.ppm
+        // Save to results/ResultYYYY_MM_DD_HH_MM.ppm, relative to the working directory
+        std::filesystem::create_directories("results");
         std::ostringstream filename;
-        filename << "../results/Result" 
-                << std::put_time(&localTime, "%Y_%m_%d_%H_%M") 
+        filename << "results/Result"
+                << std::put_time(&localTime, "%Y_%m_%d_%H_%M")
                 << ".ppm";
 
-        I->Write(filename.str().c_str()); // Pass filename.str() directly if Write() accepts std::string
+        if (I->Write(filename.str().c_str()))
+            cout << "Saved " << std::filesystem::absolute(filename.str()).string() << endl;
+        else
+            cerr << "Could not write " << filename.str() << endl;
         isDone = true;
     }
 }

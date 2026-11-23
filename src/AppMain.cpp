@@ -1,4 +1,6 @@
-#include "windows.h"
+#include <chrono>
+#include <thread>
+
 #include "AppMain.h"
 
 // GLUT keyboard callback: handle key presses, e.g. ESC to quit the application.
@@ -26,33 +28,43 @@ void Idle( void )
 	}
 	else
 	{
-		Sleep (100);
+		std::this_thread::sleep_for( std::chrono::milliseconds( 100 ) );
 		glFlush(); 
 		glutPostRedisplay();
 	}
 }
 
+// Usage: Raytracer [scene.sdf]
+// Without an argument, the Cornell box in assets/scene.sdf is rendered.
 int main(int argc, char** argv)
 {
-	//Initialize glut window
+	//Initialize glut (this also strips GLUT-specific options from argv)
 	glutInit(&argc, argv);
+
+	//Pick the scene file: first command-line argument, or the default scene.
+	//RAYTRACER_DEFAULT_SCENE is set by CMake to the absolute path of assets/scene.sdf.
+	const char* scenePath = ( argc > 1 ) ? argv[1] : RAYTRACER_DEFAULT_SCENE;
+
+	//Read the scene before opening a window. If it can't be read, output an error.
+	if ( !w.readScene( scenePath ) )
+	{
+		std::cerr << "No Scene Found: could not read \"" << scenePath << "\"" << std::endl;
+		std::cerr << "Usage: " << argv[0] << " [scene.sdf]" << std::endl;
+		return 1;
+	}
+
+	//Create the window
 	glutInitDisplayMode( GLUT_SINGLE | GLUT_RGBA);
 	glutInitWindowPosition(200,100);
 	glutInitWindowSize( RESOLUTIONX , RESOLUTIONY );
 	glutCreateWindow("Raytracer");
 	glClearColor (0.0, 0.0, 0.0, 0.0);
 
-	//Read Cornell Box from scene.sdf. If no scene is found output error.
-	if ( w.readScene("../assets/scene.sdf") )
-	{
-		//Set up keyboard, idle and draw functions and run main GLUT loop
-		glutKeyboardFunc( Keyboard );
-		glutIdleFunc( Idle );
-		glutDisplayFunc( Draw );	
-		glutMainLoop();
-	} else {
-		std::cout<<"No Scene Found"<<std::endl;
-	}
+	//Set up keyboard, idle and draw functions and run main GLUT loop
+	glutKeyboardFunc( Keyboard );
+	glutIdleFunc( Idle );
+	glutDisplayFunc( Draw );
+	glutMainLoop();
 
 	return 0;
 }
