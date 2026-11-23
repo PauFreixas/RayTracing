@@ -55,6 +55,7 @@ cmake-build-release/
 # ==========================================
 *.ppm
 *.bmp
+results/
 
 # ==========================================
 # Operating System Files

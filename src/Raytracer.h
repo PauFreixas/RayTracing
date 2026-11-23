@@ -25,7 +25,11 @@
 #include "Image.h"
 #include "World.h"
 
-#include <GL/glut.h>
+#if defined(__APPLE__)
+    #include <GLUT/glut.h>
+#else
+    #include <GL/glut.h>
+#endif
 
 class Raytracer
 {
@@ -70,33 +74,11 @@ class Raytracer
 					int max_tree_depth		// Limit to depth of the ray tree.
 		);
 
-		Color Shade2(						// Surface shader.
-					const HitInfo &hitinfo, // Geometry of ray-object hit + surface material.
-					const Scene   &scene,    // Global scene description, including lights.
-					int max_tree_depth		// Limit to depth of the ray tree.
-		);
-
 		int Cast(							// Casts a single ray to see what it hits.
 					const Ray   &ray,       // The ray to cast into the scene.
 					const Scene &scene,     // Global scene description, including lights.
 					HitInfo     &hitinfo,    // All information about ray-object intersection.
 					Object		*ignore	 = nullptr  // Object that will be ignored for the intersection
-		);
-
-		int Cast2(							// Casts a single ray to see what it hits.
-					const Ray   &ray,       // The ray to cast into the scene.
-					const Scene &scene,     // Global scene description, including lights.
-					HitInfo     &hitinfo,    // All information about ray-object intersection.
-					Object		*ignore	 = nullptr  // Object that will be ignored for the intersection
-		);
-
-		Sample SampleProjectedHemisphere(
-					const Vec3 &N			// Normal of the surface
-		);
-
-		Sample SampleSpecularLobe(
-					const Vec3 &R,			// Perfect reflective direction
-					float phong_exp			// Phong exponent
 		);
 };
 
