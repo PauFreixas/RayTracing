@@ -36,8 +36,11 @@ class Image
 
 		Image( int x_res, int y_res );
 		~Image();
-		bool Write( const char *file_name );
-		Pixel &operator()( int i, int j );
+		Image( const Image & ) = delete;				// Owns its pixels: not copyable.
+		Image &operator=( const Image & ) = delete;
+		bool Write( const char *file_name ) const;	// Save as binary PPM (P6).
+		Pixel &operator()( int i, int j );				// Row i (0 = bottom), column j.
+		const Pixel &operator()( int i, int j ) const;
 };
 
 #endif

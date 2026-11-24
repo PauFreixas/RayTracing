@@ -1,0 +1,66 @@
+# Builds the ray tracer and runs the unit and image regression tests on
+# Windows, Linux and macOS for every push to main and every pull request.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:      # Allows a manual run from the Actions tab.
+
+permissions:
+  contents: read
+
+# A newer push to the same branch cancels the run that is still going.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.os }}
+    strategy:
+      fail-fast: false    # Let every OS finish, so all failures are visible at once.
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Windows fetches FreeGLUT through CMake; macOS uses the system GLUT framework.
+      - name: Install GLUT and OpenGL headers (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libglu1-mesa-dev mesa-common-dev
+          sudo apt-get install -y libglut-dev || sudo apt-get install -y freeglut3-dev
+
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build build --config Release --parallel
+
+      - name: Run tests
+        run: ctest --test-dir build -C Release --output-on-failure
+
+      # Renders without a window, which is what the CI machines need.
+      - name: Render the scenes headless
+        shell: bash
+        run: |
+          if [ -f build/Release/Raytracer.exe ]; then EXE=build/Release/Raytracer.exe; else EXE=build/Raytracer; fi
+          for scene in scene cornell_mirror_glass showcase; do
+            "$EXE" --headless -s "assets/$scene.sdf" -o "build/renders/$scene.ppm" -w 512 -h 512
+          done
+
+      # Renders, plus the test renders and difference images, to download from the run page.
+      - name: Upload renders
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: renders-${{ matrix.os }}
+          path: |
+            build/renders/
+            build/test-output/
+          if-no-files-found: ignore

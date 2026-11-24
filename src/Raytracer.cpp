@@ -1,11 +1,4 @@
 #include <math.h>
-//These are all to save result with a timestamp
-#include <chrono>
-#include <ctime>
-#include <iomanip>
-#include <sstream>
-#include <string>
-#include <filesystem>
 /***************************************************************************
 *                                                                          *
 * This is the source file for a ray tracer. It defines most of the		   *
@@ -27,58 +20,41 @@ static const double RayBias = 1.0E-3;
 
 #include "Raytracer.h"
 
-// Draw image on the screen
-void Raytracer::draw( void )
-{
-	glDrawPixels( resolutionX, resolutionY, GL_RGB, GL_UNSIGNED_BYTE, &(*I)( 0 , 0 ) );
-}
-
 // Cast_line casts all the initial rays starting from the eye for a single
 //  raster line. Copies pixels to image object.
-void Raytracer::cast_line( World world )
+void Raytracer::cast_line( const World &world )
 {
-    Ray ray;
-	Color color;	// Color computed when using multiple rays per pixel
+	if( isDone ) return;
 
-	ray.origin = world.getCamera().eye; // All initial rays originate from the eye.
+	const Camera &camera = world.getCamera();
+	const Scene  &scene  = world.getScene();
+
+    Ray ray;
+	ray.origin = camera.eye; // All initial rays originate from the eye.
 	ray.no_emitters = false;
 
-    Vec3 G  = Unit( world.getCamera().lookat - world.getCamera().eye );	// Gaze direction.
-    Vec3 U  = Unit( world.getCamera().up / G );							// Up vector.
+    Vec3 G  = Unit( camera.lookat - camera.eye );						// Gaze direction.
+    Vec3 U  = Unit( camera.up / G );									// Up vector.
     Vec3 R  = Unit( G ^ U );											// Right vector.
-    Vec3 O  = ( world.getCamera().vpdist * G ) - R + U;					// "Origin" for the raster.
+	// The view plane is 2 units tall and 2 * aspect units wide, so pixels stay square.
+	const double aspect = double( resolutionX ) / double( resolutionY );
+    Vec3 O  = ( camera.vpdist * G ) - aspect * R + U;				// "Origin" for the raster.
     Vec3 dU = U * ( 2.0 / ( resolutionY - 1 ) );						// Up increments.
-	Vec3 dR = R * ( 2.0 / ( resolutionX - 1 ) );						// Right increments.
+	Vec3 dR = R * ( 2.0 * aspect / ( resolutionX - 1 ) );			// Right increments.
 
-    if( currentLine % 10 == 0 ) cout << "line " << currentLine << endl;
     for( int i = 0; i < resolutionX; i++ )
     {
 		ray.direction = Unit( O + i * dR - currentLine * dU  );
-		(*I)( resolutionY-currentLine-1, i ) = ToneMap( Trace( ray, world.getScene(), tree_depth ) );
+		(*I)( resolutionY-currentLine-1, i ) = ToneMap( Trace( ray, scene, tree_depth ) );
     }
 
-	if (++currentLine == resolutionY) {
-        // Image computation done, save it to file
-        cout << "done." << endl;
+	if( ++currentLine == resolutionY ) isDone = true;
+}
 
-        // Get current time
-        auto now = std::chrono::system_clock::now();
-        std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
-        std::tm localTime = *std::localtime(&currentTime);
-
-        // Save to results/ResultYYYY_MM_DD_HH_MM.ppm, relative to the working directory
-        std::filesystem::create_directories("results");
-        std::ostringstream filename;
-        filename << "results/Result"
-                << std::put_time(&localTime, "%Y_%m_%d_%H_%M")
-                << ".ppm";
-
-        if (I->Write(filename.str().c_str()))
-            cout << "Saved " << std::filesystem::absolute(filename.str()).string() << endl;
-        else
-            cerr << "Could not write " << filename.str() << endl;
-        isDone = true;
-    }
+// Render renders every remaining line of the image in one go.
+void Raytracer::Render( const World &world )
+{
+	while( !isDone ) cast_line( world );
 }
 
 

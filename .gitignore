@@ -54,6 +54,8 @@ cmake-build-release/
 # Generated Rendered Output Files
 # ==========================================
 *.ppm
+# ...except the reference images the image regression tests compare against
+!tests/reference/*.ppm
 *.bmp
 results/
 

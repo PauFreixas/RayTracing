@@ -21,8 +21,8 @@ class World
 		World() {};
 		virtual ~World() {};
 		bool readScene( const char *filename );
-		Camera getCamera( void );
-		Scene getScene( void );
+		const Camera &getCamera( void ) const;
+		const Scene &getScene( void ) const;
 };
 
 #endif
