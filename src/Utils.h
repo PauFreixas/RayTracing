@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+	#include <cstdlib>
+
 	#include "Material.h"
 
 	#include "Color.h"

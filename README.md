@@ -1,5 +1,7 @@
 # RayTracing
 
+[![CI](https://github.com/PauFreixas/RayTracing/actions/workflows/ci.yml/badge.svg)](https://github.com/PauFreixas/RayTracing/actions/workflows/ci.yml)
+
 A small CPU ray tracer written from first principles in C++17, with an OpenGL/GLUT live preview.
 
 ![Showcase render: glass ball, mirror sphere, coloured pillars and shiny spheres in a Cornell box](docs/images/showcase.png)
@@ -17,6 +19,8 @@ This repository builds a simple ray tracer that reads a scene description from a
 - Uses OpenGL and GLUT/FreeGLUT for rendering
 - Reads scenes from a simple text format (see [docs/scene-format.md](docs/scene-format.md))
 - Saves each finished render to `results/Result<date>_<time>.ppm`
+- Headless mode: renders without opening a window, for scripts and CI
+- Unit tests and image regression tests, run on Windows, Linux and macOS by GitHub Actions
 
 ## Gallery
 
@@ -138,6 +142,52 @@ Windows (PowerShell):
 
 `.ppm` files can be opened with GIMP, IrfanView, Photoshop or most image viewers on Linux and macOS.
 
+### Command-line options
+
+```
+Raytracer [options] [scene.sdf]
+
+  -s, --scene <file>    Scene to render (default: assets/scene.sdf)
+  -o, --output <file>   Where to save the image, as .ppm (default: results/Result<date>_<time>.ppm)
+  -w, --width <pixels>  Image width  (default: 1000)
+  -h, --height <pixels> Image height (default: 1000)
+      --headless        Render without opening a window
+      --help            Show this help
+```
+
+### Headless mode
+
+`--headless` renders the whole image without opening a window, saves it and exits. This works on machines with no display, such as CI servers:
+
+```sh
+./Raytracer --headless -s ../assets/showcase.sdf -o showcase.ppm -w 512 -h 512
+```
+
+## Tests
+
+The tests use [doctest](https://github.com/doctest/doctest), which CMake downloads automatically. Build as above, then from the project root:
+
+```sh
+ctest --test-dir build -C Release --output-on-failure
+```
+
+There are two groups:
+
+- **unit**: vector and matrix maths, reflection and refraction, ray intersection with every shape (hit, miss, grazing hit, hit from inside), and the scene reader (valid file, malformed lines, missing file).
+- **image**: renders every scene in `assets/` at 128×128 and compares it with a reference image in `tests/reference/`. A small tolerance allows for floating-point differences between compilers and operating systems. Each run writes the renders and difference images to `build/test-output/`.
+
+After a deliberate visual change, update the reference images and check them by eye before committing:
+
+```sh
+RAYTRACER_UPDATE_REFERENCES=1 ctest --test-dir build -C Release -R image     # Linux/macOS
+```
+
+```powershell
+$env:RAYTRACER_UPDATE_REFERENCES = "1"; ctest --test-dir build -C Release -R image; Remove-Item Env:RAYTRACER_UPDATE_REFERENCES   # Windows
+```
+
+GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml)) builds the project and runs the tests on Windows, Linux and macOS for every push to `main` and every pull request. Each run also renders the scenes headless and attaches them to the run page.
+
 ## Packaging and Shipping
 
 - Do not commit `build/`, `Debug/`, `Release/`, or other generated build artifacts to GitHub.
@@ -147,20 +197,24 @@ Windows (PowerShell):
 ## Notes
 
 - CMake first tries to use system GLUT. If no system GLUT is available on Linux/Windows, it fetches FreeGLUT automatically.
-- Rendered output (`*.ppm` and `results/`) is excluded by `.gitignore`.
+- Rendered output (`*.ppm` and `results/`) is excluded by `.gitignore`, except the reference images in `tests/reference/`.
 - On Windows, when FreeGLUT is fetched by CMake, the build copies `libfreeglut.dll` (or `freeglut.dll`) next to the executable, so it runs without any extra setup.
 - The renderer draws incrementally using `glutIdleFunc` while the ray tracer computes the image.
 
 ## Files
 
-- `src/AppMain.cpp` - application entry point, command-line handling, GLUT callbacks and main loop
-- `src/Raytracer.cpp` / `src/Raytracer.h` - ray tracing core: camera rays, `Trace`, `Cast`, `Shade`, image output
+- `src/AppMain.cpp` - application entry point: command-line options, headless mode, and the GLUT preview window (the only file that uses OpenGL/GLUT)
+- `src/Raytracer.cpp` / `src/Raytracer.h` - ray tracing core: camera rays, `Trace`, `Cast`, `Shade`
 - `src/World.cpp` / `src/Scene.h` / `src/Camera.h` - scene and camera data
 - `src/Reader.cpp` / `src/Reader.h` - scene file parsing
 - `src/Sphere`, `src/Cube`, `src/Triangle`, `src/Polygon` - geometry and ray intersection
 - `assets/scene.sdf` - default Cornell box scene
+- `assets/cornell_mirror_glass.sdf`, `assets/showcase.sdf` - scenes for the gallery
 - `docs/scene-format.md` - scene file format reference
-- `CMakeLists.txt` - project build configuration
+- `docs/shading.md` - how the shading works, with formulas and sources
+- `tests/` - unit tests and image regression tests; `tests/reference/` holds the reference images
+- `.github/workflows/ci.yml` - GitHub Actions build and test workflow
+- `CMakeLists.txt` - project build configuration: the `raytracer_core` library, the `Raytracer` app and the `raytracer_tests` tests
 
 ## Credits
 

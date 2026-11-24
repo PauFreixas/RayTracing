@@ -21,9 +21,11 @@ bool Reader::Get( const char *line, const char *name, float &value )
 bool Reader::Blank( char *line )
 {
 	if( *line == '#' ) return true;  // Comment lines start with '#'
-	while( *line != '\n' )
+	// Stop at the end of the string too: the last line may have no newline.
+	// '\r' counts as blank so files with Windows line endings work everywhere.
+	while( *line != '\n' && *line != '\0' )
 	{
-		if( *line != ' ' && *line != '\t' ) return false;
+		if( *line != ' ' && *line != '\t' && *line != '\r' ) return false;
 		line++;
 	}
 	return true;
@@ -67,33 +69,42 @@ bool Reader::ReadSceneDescription( const char *file_name, Scene &scene, Camera &
 		// Now look for all the other stuff...  materials, camera,
 		// lights, etc.
 
-		if( Get( line, "diffuse"     , obj->material.m_Diffuse		) ) continue;
-		if( Get( line, "specular"    , obj->material.m_Specular		) ) continue;
-		if( Get( line, "reflectivity", obj->material.m_Reflectivity	) ) continue;
-		if( Get( line, "refractive_index", obj->material.m_RefractiveIndex	) ) continue;
-		if( Get( line, "opacity"		 , obj->material.m_Opacity			) ) continue;
-		if( Get( line, "Phong_exp"   , obj->material.m_Phong_exp	) ) continue;
-        if( Get( line, "emission"    , obj->material.m_Emission     ) ) continue;
-		if( Get( line, "eye"         , camera.eye			        ) ) continue;
-		if( Get( line, "lookat"      , camera.lookat			    ) ) continue;            
-		if( Get( line, "up"          , camera.up					) ) continue;            
-		if( Get( line, "vpdist"      , camera.vpdist				) ) continue;            
-		if( Get( line, "lightpos"  , scene.light[scene.num_lights].m_Position ) )continue;
-		// Only increments light number after reading lightcolor
-		// It is assumed that lightcolor is always placed after lightpos in the scene file
-		if( Get( line, "lightcolor"    , scene.light[scene.num_lights].m_Color  ) ){
-			scene.num_lights++;
-			continue;            
+		// Material lines apply to the most recent object, so they need one.
+		if( obj != NULL )
+		{
+			if( Get( line, "diffuse"     , obj->material.m_Diffuse		) ) continue;
+			if( Get( line, "specular"    , obj->material.m_Specular		) ) continue;
+			if( Get( line, "reflectivity", obj->material.m_Reflectivity	) ) continue;
+			if( Get( line, "refractive_index", obj->material.m_RefractiveIndex	) ) continue;
+			if( Get( line, "opacity"		 , obj->material.m_Opacity			) ) continue;
+			if( Get( line, "Phong_exp"   , obj->material.m_Phong_exp	) ) continue;
+			if( Get( line, "emission"    , obj->material.m_Emission     ) ) continue;
 		}
-		if( Get( line, "amblight"    , scene.ambient				) ) continue;            
-		if( Get( line, "bgcolor"     , scene.bgcolor			    ) ) continue;  
+		if( Get( line, "eye"         , camera.eye			        ) ) continue;
+		if( Get( line, "lookat"      , camera.lookat			    ) ) continue;
+		if( Get( line, "up"          , camera.up					) ) continue;
+		if( Get( line, "vpdist"      , camera.vpdist				) ) continue;
+		// At most Scene::MaxLights lights; extra ones are reported as errors.
+		if( scene.num_lights < Scene::MaxLights )
+		{
+			if( Get( line, "lightpos"  , scene.light[scene.num_lights].m_Position ) )continue;
+			// Only increments light number after reading lightcolor
+			// It is assumed that lightcolor is always placed after lightpos in the scene file
+			if( Get( line, "lightcolor"    , scene.light[scene.num_lights].m_Color  ) ){
+				scene.num_lights++;
+				continue;
+			}
+		}
+		if( Get( line, "amblight"    , scene.ambient				) ) continue;
+		if( Get( line, "bgcolor"     , scene.bgcolor			    ) ) continue;
 
-		cerr << "Error reading scene file, line " << line_num 
+		cerr << "Error reading scene file, line " << line_num
 			 << ": " << line << endl;
+		fclose( fp );
 		return false;
 	}
 
+	fclose( fp );
 	scene.first = obj;
-	cout << "done reading file." << endl;
 	return true;
 }

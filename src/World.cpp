@@ -7,12 +7,12 @@ bool World::readScene( const char *filename )
 	return r.ReadSceneDescription( filename , sce , cam );
 }
 
-Camera World::getCamera( void )
+const Camera &World::getCamera( void ) const
 {
 	return cam;
 }
 
-Scene World::getScene( void )
+const Scene &World::getScene( void ) const
 {
 	return sce;
 }

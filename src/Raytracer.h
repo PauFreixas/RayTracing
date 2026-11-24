@@ -21,15 +21,13 @@
 *                                                                          *
 ***************************************************************************/
 
+// The renderer core.  It has no dependency on OpenGL or GLUT, so it can run
+// without a window (headless mode, unit tests, CI).  Displaying the image is
+// done by AppMain.cpp.
+
 #include "Utils.h"
 #include "Image.h"
 #include "World.h"
-
-#if defined(__APPLE__)
-    #include <GLUT/glut.h>
-#else
-    #include <GL/glut.h>
-#endif
 
 class Raytracer
 {
@@ -51,17 +49,19 @@ class Raytracer
 		virtual ~Raytracer(){
 			delete I;
 		}
-		void draw( void );
-		void cast_line( World world );
-		bool IsDone( void )
-		{
-			return isDone;
-		}
+		Raytracer( const Raytracer & ) = delete;				// Owns the image: not copyable.
+		Raytracer &operator=( const Raytracer & ) = delete;
+
+		void cast_line( const World &world );	// Render the next raster line.
+		void Render( const World &world );		// Render all remaining lines.
+		bool IsDone( void ) const { return isDone; }
+		int  CurrentLine( void ) const { return currentLine; }
+		const Image &GetImage( void ) const { return *I; }
 
 	private:
 
 		Pixel ToneMap( const Color &color );
-		
+
 		Color Trace(						// What color do I see looking along this ray?
 					const Ray   &ray,       // Root of ray tree to recursively trace in scene.
 					const Scene &scene,		// Global scene description, including lights.

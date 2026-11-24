@@ -33,7 +33,12 @@ Pixel &Image::operator()( int i, int j )
 	return *( pixels + ( i * width + j ) ); 
 }  
 
-bool Image::Write( const char *file_name )
+const Pixel &Image::operator()( int i, int j ) const
+{
+	return *( pixels + ( i * width + j ) );
+}
+
+bool Image::Write( const char *file_name ) const
 {
     Pixel *p;
     FILE  *fp = fopen( file_name, "w+b" );
